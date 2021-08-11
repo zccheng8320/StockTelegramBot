@@ -31,11 +31,11 @@ namespace Lib
                     await Task.CompletedTask;
 
                 var id = update.Id;
-                _logger.LogInformation($"Start Process UpdateId: {id}");
+                //_logger.LogInformation($"Start Process UpdateId: {id}");
 
                 void CallBack(Task task)
                 {
-                    _logger.LogInformation($" UpdateId: {id} is {task.Status}");
+                    //_logger.LogInformation($" UpdateId: {id} is {task.Status}");
                     if (task.IsFaulted) _logger.LogCritical($"Fail Reason :{task.Exception?.ToString()}");
                 }
 

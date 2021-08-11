@@ -68,9 +68,9 @@ namespace TelegramBotExtensions.LongPolling
         {
             var telegramBotClient =
                 _serviceProvider.CreateAsyncScope().ServiceProvider.GetService<ITelegramBotClient>();
-            _logger.LogInformation($"Client is sending GetUpdates(offset:{offset}) request to Telegram Api...");
+            //_logger.LogInformation($"Client is sending GetUpdates(offset:{offset}) request to Telegram Api...");
             var updates = await telegramBotClient.GetUpdatesAsync(offset, _longPollingMaximumNumberOfRequestProcessors);
-            _logger.LogInformation($"GetUpdates(offset:{offset}) request is success!, updates count is {updates.Length}");
+            //_logger.LogInformation($"GetUpdates(offset:{offset}) request is success!, updates count is {updates.Length}");
             return updates;
         }
 
