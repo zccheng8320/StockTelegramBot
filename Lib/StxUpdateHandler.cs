@@ -23,12 +23,12 @@ namespace Lib
             try
             {
                 if (update is null)
-                    await Task.CompletedTask;
+                    return;
 
                 var nowUtc = DateTime.UtcNow;
 
                 if (nowUtc > update.Message.Date.AddMinutes(1))
-                    await Task.CompletedTask;
+                    return;
 
                 var id = update.Id;
                 //_logger.LogInformation($"Start Process UpdateId: {id}");
