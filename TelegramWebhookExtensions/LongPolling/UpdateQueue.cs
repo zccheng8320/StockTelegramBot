@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using Telegram.Bot.Types;
 using TelegramBotExtensions.Interfaces;
 
@@ -7,6 +8,8 @@ namespace TelegramBotExtensions.LongPolling
     public class UpdateQueue : IQueue<Update>
     {
         private readonly Queue<Update> _updateQueue;
+        private readonly AutoResetEvent _queueNotifier = new AutoResetEvent(false);
+
         private readonly object _updateQueueLock = new();
         public UpdateQueue()
         {
@@ -16,18 +19,17 @@ namespace TelegramBotExtensions.LongPolling
         {
             while (true)
             {
-                lock (_updateQueueLock)
-                {
-                    if (!_updateQueue.TryDequeue(out var update))
-                        continue;
-                    return update;
-                }
+                _queueNotifier.WaitOne();
+                if (!_updateQueue.TryDequeue(out var update))
+                    continue;
+                return update;
             }
         }
 
         public void Enqueue(Update objects)
         {
             _updateQueue.Enqueue(objects);
+            _queueNotifier.Set();
         }
     }
 }

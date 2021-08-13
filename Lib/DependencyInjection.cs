@@ -29,12 +29,12 @@ namespace Lib
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             services.AddMemoryCache();
-            services.AddSingleton<IQueue<ChromeDriver>, ChromeDriverConcurrentQueue>();
+            //services.AddSingleton<IQueue<ChromeDriver>, ChromeDriverConcurrentQueue>();
             services.AddSingleton<IStockCodeMapperProvider,TaipeiStockCodeMapperProvider>();
             services.AddSingleton<IStockCodeMapperCreator,TaipeiStockCodeMapperCreator>();
-            services.AddSingleton<IStxChartScreenShot, StxChartSelenium>();
+            //services.AddSingleton<IStxChartScreenShot, StxChartSelenium>();
             services.AddSingleton<IHtmlDataDownload,HtmlDataDownload>();           
-            //services.AddSingleton<IStxChartScreenShot, StxChartScreenShot>();
+            services.AddSingleton<IStxChartScreenShot, StxChartScreenShot>();
             services.AddScoped<IStxInfoTextCrawler,StxInfoTextCrawler>();           
             services.AddScoped<BaseCommandProcessor, StxChartSearch>();
             services.AddScoped<BaseCommandProcessor, StxTextSearch>();
@@ -49,7 +49,7 @@ namespace Lib
             else
                 await ClearWebhookInfo(services);
             await DownLoadStockInfo(services);
-            await OpenChromeWebDriver(services);
+           // await OpenChromeWebDriver(services);
             return host;
         }
 

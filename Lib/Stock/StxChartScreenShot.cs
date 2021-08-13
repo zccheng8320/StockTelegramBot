@@ -10,9 +10,7 @@ using Lib;
 namespace WebCrawler
 {
     public class StxChartScreenShot : IStxChartScreenShot
-    {
-        private const string 櫃買指數網址= "https://s.yimg.com/nb/tw_stock_frontend/scripts/TseChart/TseChart.eb1b267900.html?sid=OTC";
-        private const string 加權指數網址= "https://s.yimg.com/nb/tw_stock_frontend/scripts/TseChart/TseChart.eb1b267900.html?sid=TSE";
+    {        
         public async Task<byte[]> GetChartImageAsync(string code)
         {
             try
@@ -21,7 +19,7 @@ namespace WebCrawler
                 {
                     var converter = new HtmlConverter();
                     var s = converter.FromUrl(
-                        $"https://s.yimg.com/nb/tw_stock_frontend/scripts/StxChart/StxChart.9d11dfe155.html?sid={code}",width:512);
+                        code is Const.櫃買指數代號 or Const.加權指數代號 ? string.Format(Const.指數網址, code) : string.Format(Const.個股網址, code), width:512);
                     return s;
                 });
                 return bytes;

@@ -30,7 +30,6 @@ namespace Lib
                 if (nowUtc > update.Message.Date.AddMinutes(1))
                     return;
 
-                var id = update.Id;
                 //_logger.LogInformation($"Start Process UpdateId: {id}");
 
                 void CallBack(Task task)
@@ -44,7 +43,7 @@ namespace Lib
             }
             catch (Exception e)
             {
-                _logger.LogDebug(e.ToString());
+                _logger.LogCritical(e.ToString());
                 await Task.FromException(e);
             }
         }

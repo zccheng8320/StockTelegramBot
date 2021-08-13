@@ -45,7 +45,7 @@ namespace TelegramBotExtensions.LongPolling
             {
                 try
                 {
-                    var task =  SendGetUpdateRequestAsync(currentOffset);
+                    var task = SendGetUpdateRequestAsync(currentOffset);
                     task.Wait();
                     var updates = task.Result;
                     foreach (var update in updates)
@@ -53,7 +53,7 @@ namespace TelegramBotExtensions.LongPolling
                         _updateQueue.Enqueue(update);
                         currentOffset = update.Id;
                     }
-                    if(updates.Any())
+                    if (updates.Any())
                         currentOffset++;
                     task.Dispose();
                 }
@@ -62,6 +62,7 @@ namespace TelegramBotExtensions.LongPolling
                     _logger.LogCritical(e.ToString());
                 }
             }
+           
         }
 
         private async Task<Update[]> SendGetUpdateRequestAsync(int offset)
@@ -79,27 +80,22 @@ namespace TelegramBotExtensions.LongPolling
         /// </summary>
         private void RequestProcessorController()
         {
-
-            var taskList = new List<Task>();
             var maxTask = _longPollingMaximumNumberOfRequestProcessors;
-            while (true)
+            for (var i = 0; i < maxTask; i++)
+                CreateUpdateHandlerProcessTask();
+        }
+
+        private void CreateUpdateHandlerProcessTask()
+        {
+            var scope = _serviceProvider.CreateScope().ServiceProvider;
+            var updateHandler = scope.GetService<IUpdateHandler>();
+            var update = _updateQueue.Dequeue();
+            var task = updateHandler.Process(update);
+            task.ContinueWith(m =>
             {
-                if (taskList.Count == maxTask)
-                {
-                    var taskWait = Task.WhenAny(taskList);
-                    taskWait.Wait();
-                    var finishTask = taskWait.Result;
-                    taskList.Remove(finishTask);
-                    finishTask.Dispose();
-                    continue;
-                }
-
-                var scope = _serviceProvider.CreateScope().ServiceProvider;
-                var updateHandler = scope.GetService<IUpdateHandler>();
-                var update = _updateQueue.Dequeue();
-                taskList.Add(updateHandler.Process(update));
-            }
-
+                CreateUpdateHandlerProcessTask();
+                m.Dispose();
+            });
 
         }
 

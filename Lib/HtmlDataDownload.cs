@@ -14,10 +14,8 @@ namespace Lib
         }
         public async Task<byte[]> DownloadDataTask(string url)
         {
-            _logger.LogInformation($"Start download {url}");
             var webClient = new WebClient();
             var data = await webClient.DownloadDataTaskAsync(url);
-            _logger.LogInformation($"{url} download completed");
             return data;
         }
     }
