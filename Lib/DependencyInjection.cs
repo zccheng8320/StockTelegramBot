@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Lib.CommandProcess;
 using Lib.CommandProcess.Interfaces;
 using Lib.SeleniumExtensions;
 using Lib.Stock;
-using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,18 +27,22 @@ namespace Lib
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             services.AddMemoryCache();
-            //services.AddSingleton<IQueue<ChromeDriver>, ChromeDriverConcurrentQueue>();
             services.AddSingleton<IStockCodeMapperProvider,TaipeiStockCodeMapperProvider>();
             services.AddSingleton<IStockCodeMapperCreator,TaipeiStockCodeMapperCreator>();
-            //services.AddSingleton<IStxChartScreenShot, StxChartSelenium>();
-            services.AddSingleton<IHtmlDataDownload,HtmlDataDownload>();           
-            services.AddSingleton<IStxChartScreenShot, StxChartScreenShot>();
+            services.AddSingleton<IHtmlDataDownload,HtmlDataDownload>();       
+            services.AddStxChartSelenium();
+            //services.AddSingleton<IStxChartScreenShot, StxChartScreenShot>();
             services.AddScoped<IStxInfoTextCrawler,StxInfoTextCrawler>();           
             services.AddScoped<BaseCommandProcessor, StxChartSearch>();
             services.AddScoped<BaseCommandProcessor, StxTextSearch>();
             services.AddScoped<ICommandProcessorFactory,CommandProcessorFactory>();
         }
 
+        private static void AddStxChartSelenium(this IServiceCollection services)
+        {
+            services.AddSingleton<IQueue<ChromeDriver>, ChromeDriverConcurrentQueue>();
+            services.AddSingleton<IStxChartScreenShot, StxChartSelenium>();
+        }
         public static async Task<IHost> TelegramStockBotInitialSetting(this IHost host, TelegramGettingUpdatesWay way)
         {
             var services = host.Services;
@@ -49,7 +51,8 @@ namespace Lib
             else
                 await ClearWebhookInfo(services);
             await DownLoadStockInfo(services);
-           // await OpenChromeWebDriver(services);
+            if( services.GetService<IStxChartScreenShot>()?.GetType() == typeof(StxChartSelenium))
+                await OpenChromeWebDriver(services);
             return host;
         }
 

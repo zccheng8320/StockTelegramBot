@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using Microsoft.Extensions.Configuration;
 using OpenQA.Selenium.Chrome;
 using TelegramBotExtensions.Interfaces;
@@ -9,20 +10,12 @@ namespace Lib.SeleniumExtensions
 {
     public class ChromeDriverConcurrentQueue : IQueue<ChromeDriver>
     {
-        private readonly IConfiguration _configuration;
-        private readonly ConcurrentQueue<ChromeDriver> ChromeDriverQueue;
-        public ChromeDriverConcurrentQueue(IConfiguration configuration)
-        {
-            _configuration = configuration;
-            var driverPath = _configuration["ChromeDriverSetting:DriverPath"];
-            var maxChromeDriverServices = int.Parse(_configuration["ChromeDriverSetting:MaxChromeDriverServices"]);
+        private readonly ConcurrentQueue<ChromeDriver> _chromeDriverQueue;
+        private readonly AutoResetEvent _queueNotifier = new AutoResetEvent(false);
 
-            ChromeDriverQueue = new(CreateChromeDriverServices(maxChromeDriverServices, driverPath));
-        }
-
-        public ChromeDriverConcurrentQueue(int maxChromeDriverServices, string DriverPath)
+        public ChromeDriverConcurrentQueue()
         {
-            ChromeDriverQueue = new(CreateChromeDriverServices(maxChromeDriverServices, DriverPath));
+            this._chromeDriverQueue = new ConcurrentQueue<ChromeDriver>();
         }
         private IEnumerable<ChromeDriver> CreateChromeDriverServices(int count, string driverPath)
         {
@@ -45,7 +38,8 @@ namespace Lib.SeleniumExtensions
         {
             while (true)
             {
-                if (!ChromeDriverQueue.TryDequeue(out var driver))
+                _queueNotifier.WaitOne();
+                if (!_chromeDriverQueue.TryDequeue(out var driver))
                     continue;
                 return driver;
             }
@@ -53,7 +47,8 @@ namespace Lib.SeleniumExtensions
 
         public void Enqueue(ChromeDriver driver)
         {
-            ChromeDriverQueue.Enqueue(driver);
+            _chromeDriverQueue.Enqueue(driver);
+            _queueNotifier.Set();
         }
     }
 }

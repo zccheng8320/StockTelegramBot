@@ -9,8 +9,6 @@ namespace TelegramBotExtensions.LongPolling
     {
         private readonly Queue<Update> _updateQueue;
         private readonly AutoResetEvent _queueNotifier = new AutoResetEvent(false);
-
-        private readonly object _updateQueueLock = new();
         public UpdateQueue()
         {
             _updateQueue = new Queue<Update>();

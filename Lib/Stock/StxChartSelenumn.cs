@@ -22,7 +22,7 @@ namespace WebCrawler
             return await Task.Run(() =>
             {
                 var chromeDriver = _chromeDriverProvider.Dequeue();
-                chromeDriver.Manage().Window.Size = new Size(562, 400);
+                chromeDriver.Manage().Window.Size = new Size(562, 380);
                 chromeDriver.Navigate()
                     .GoToUrl(code is Const.櫃買指數代號 or Const.加權指數代號 ? string.Format(指數網址, code) : string.Format(個股網址, code));
                 var imageByte = chromeDriver.GetScreenshot().AsByteArray;
