@@ -43,16 +43,21 @@ namespace Lib
             services.AddSingleton<IQueue<ChromeDriver>, ChromeDriverConcurrentQueue>();
             services.AddSingleton<IStxChartScreenShot, StxChartSelenium>();
         }
-        public static async Task<IHost> TelegramStockBotInitialSetting(this IHost host, TelegramGettingUpdatesWay way)
+        public static IHost TelegramStockBotInitialSetting(this IHost host, TelegramGettingUpdatesWay way)
         {
+            
             var services = host.Services;
-            if (way == TelegramGettingUpdatesWay.Webhooks)
-                await SetWebhookInfo(services);
-            else
-                await ClearWebhookInfo(services);
-            await DownLoadStockInfo(services);
-            if( services.GetService<IStxChartScreenShot>()?.GetType() == typeof(StxChartSelenium))
-                await OpenChromeWebDriver(services);
+            var lifetime = services.GetService<IHostApplicationLifetime>();
+            lifetime?.ApplicationStarted.Register(async () =>
+            {
+                if (way == TelegramGettingUpdatesWay.Webhooks)
+                    await SetWebhookInfo(services);
+                else
+                    await ClearWebhookInfo(services);
+                await DownLoadStockInfo(services);
+                if( services.GetService<IStxChartScreenShot>()?.GetType() == typeof(StxChartSelenium))
+                    await OpenChromeWebDriver(services);
+            });
             return host;
         }
 

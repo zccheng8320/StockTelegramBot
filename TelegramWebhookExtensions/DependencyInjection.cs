@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -36,22 +37,11 @@ namespace TelegramBotExtensions
         public static void AddLongPolling<TUpdateHandler>(this IServiceCollection services) 
             where TUpdateHandler : class,IUpdateHandler 
         {
-            services.AddSingleton<ILongPollingExecutor, LongPollingExecutor>();
+            services.AddHostedService<LongPollingHostService>();
             services.AddSingleton<IQueue<Update>, UpdateQueue>();
             services.AddScoped<IUpdateHandler, TUpdateHandler>();
-
         }
-        public static  void Run(this IHost host)
-        {
-            var executor = host.Services.GetService<ILongPollingExecutor>();
-            executor.StartUp();
-        }
-        public static Task RunAsync(this IHost host)
-        {
-            var executor = host.Services.GetService<ILongPollingExecutor>();
-            executor.StartUp();
-            return Task.CompletedTask;
-        }
+        
         public static void AddTelegramWebhook<TUpdateHandler>(this IServiceCollection services)
             where TUpdateHandler : class, IUpdateHandler
         {

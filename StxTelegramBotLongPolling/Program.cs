@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using TelegramBotExtensions;
+using TelegramBotExtensions.LongPolling;
 
 namespace LongPolling
 {
@@ -14,7 +15,7 @@ namespace LongPolling
     {
         static async Task Main(string[] args)
         {
-            var host = await CreateHostBuilder(args)
+            var host = CreateHostBuilder(args)
                 .Build().TelegramStockBotInitialSetting(TelegramGettingUpdatesWay.LongPolling);
             await host.RunAsync();
         }
