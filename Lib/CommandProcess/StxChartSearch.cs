@@ -20,23 +20,21 @@ namespace Lib.CommandProcess
         public override async Task Process(Update update)
         {
             var codeMapper = _stockCodeMapperProvider.Get();
-            var text = update.Message?.Text?.TrimEnd();
-            if (text != null)
+            if (string.IsNullOrEmpty(update.Message?.Text?.TrimEnd()))
+                return;
+            var userTypingCode = update.GetStockCode();
+            var chatId = update.GetChatId();
+            if (string.IsNullOrEmpty(userTypingCode))
+                return;
+            if (!codeMapper.ContainsKey(userTypingCode))
             {
-                var userTypingCode = text[3..];
-                var chatId = update?.Message?.Chat.Id;
-                if (string.IsNullOrEmpty(userTypingCode))
-                    return;
-                if (!codeMapper.ContainsKey(userTypingCode))
-                {
-                    await _client.SendTextMessageAsync(chatId, $"查無{userTypingCode}股票資訊。");
-                    return;
-                }
-                var code = codeMapper[userTypingCode];
-                var photo = await _chartScreenShot.GetChartImageAsync(code);
-                var memoryStream = new MemoryStream(photo);
-                await _client.SendPhotoAsync(chatId, new InputOnlineFile(memoryStream, $"{userTypingCode}.jpg"));
+                await _client.SendTextMessageAsync(chatId, $"查無{userTypingCode}股票資訊。");
+                return;
             }
+            var code = codeMapper[userTypingCode];
+            var photo = await _chartScreenShot.GetChartImageAsync(code);
+            var memoryStream = new MemoryStream(photo);
+            await _client.SendPhotoAsync(chatId, new InputOnlineFile(memoryStream, $"{userTypingCode}.jpg"));
         }
 
         public override bool IsMatch(Update update)
