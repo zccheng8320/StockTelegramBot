@@ -13,7 +13,7 @@ using static System.Threading.Tasks.Task;
 
 namespace TelegramBotExtensions.LongPolling
 {
-    public class LongPollingHostService : IHostedService
+    public class LongPollingHostService : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IQueue<Update> _updateQueue;
@@ -32,17 +32,19 @@ namespace TelegramBotExtensions.LongPolling
                 int.Parse(_configuration[$"TelegramSetting:LongPollingMaximumNumberOfRequestProcessors"]);
         }
 
-        public Task StartAsync(CancellationToken token = default)
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Run(() => UpdateInfoMonitor(token), token);
-            Run(() => RequestProcessorController(token), token);
-
+            Run(() => UpdateInfoMonitor(stoppingToken), stoppingToken);
+            Run(() => RequestProcessorController(stoppingToken), stoppingToken);
             return CompletedTask;
+
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public override Task StartAsync(CancellationToken token = default)
         {
-            return CompletedTask;
+            var clearWebhookInfoTask = ClearWebhookInfo(token);
+            WaitAll(clearWebhookInfoTask);
+            return base.StartAsync(token);
         }
 
         /// <summary>
@@ -78,6 +80,12 @@ namespace TelegramBotExtensions.LongPolling
             }
 
             return FromCanceled(cancellationToken);
+        }
+        private async Task ClearWebhookInfo(CancellationToken token)
+        {
+            var telegramBot = _serviceProvider.CreateScope().ServiceProvider.GetService<ITelegramBotClient>();
+            await telegramBot.TestApiAsync(token);
+            await telegramBot.SetWebhookAsync("", cancellationToken: token);
         }
 
         private async Task<Update[]> SendGetUpdateRequestAsync(int offset, CancellationToken token)

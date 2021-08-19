@@ -17,8 +17,8 @@ namespace Webhook
     {
         public static async Task Main(string[] args)
         {
-            var build = CreateHostBuilder(args).Build().TelegramStockBotInitialSetting(TelegramGettingUpdatesWay.Webhooks);
-            await build.RunAsync();
+            var build = CreateHostBuilder(args).Build();
+            await build.RunStockTelegramBotAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

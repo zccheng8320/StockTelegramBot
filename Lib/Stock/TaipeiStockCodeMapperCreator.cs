@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Lib;
@@ -39,16 +40,16 @@ namespace WebCrawler.InformationParser
         /// 上櫃證卷
         /// </summary>
         private const string mode4Url = "https://isin.twse.com.tw/isin/C_public.jsp?strMode=4";
-        public TaipeiStockCodeMapperCreator(ILogger<TaipeiStockCodeMapperCreator> _logger,IHtmlDataDownload htmlDataDownload)
+        public TaipeiStockCodeMapperCreator(ILogger<TaipeiStockCodeMapperCreator> logger,IHtmlDataDownload htmlDataDownload)
         {
-            this._logger = _logger;
+            this._logger = logger;
             _htmlDataDownload = htmlDataDownload;
         }
-        public async Task CreateAsync()
+        public async Task CreateAsync(CancellationToken token)
         {
             var dictionary = new Dictionary<string, string>();
             var url = new[] { mode2Url, mode4Url };
-            var crawlerTasks = url.Select(CrawlerCore).ToList();
+            var crawlerTasks = url.Select(m =>CrawlerCore(m,token)).ToList();
             while (crawlerTasks.Any())
             {
                 var finishTask = await Task.WhenAny(crawlerTasks);
@@ -72,9 +73,11 @@ namespace WebCrawler.InformationParser
             await stream.WriteAsync(jsonString);
         }
 
-        private async Task<IEnumerable<(string key, string value)>> CrawlerCore(string url)
+        private async Task<IEnumerable<(string key, string value)>> CrawlerCore(string url,CancellationToken token)
         {
-            var data = await _htmlDataDownload.DownloadDataTask(url);
+            var data = await _htmlDataDownload.DownloadDataTask(url, token);
+            if(token.IsCancellationRequested)
+                token.ThrowIfCancellationRequested();
             _logger.LogInformation($"Start parse {url}");
             var doc = new HtmlDocument();
             var str = new StreamReader(new MemoryStream(data), Encoding.GetEncoding(950));

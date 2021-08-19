@@ -15,9 +15,8 @@ namespace LongPolling
     {
         static async Task Main(string[] args)
         {
-            var host = CreateHostBuilder(args)
-                .Build().TelegramStockBotInitialSetting(TelegramGettingUpdatesWay.LongPolling);
-            await host.RunAsync();
+            var host = CreateHostBuilder(args).Build();
+            await host.RunStockTelegramBotAsync();
         }
 
         static IHostBuilder CreateHostBuilder(string[] args)
@@ -32,9 +31,9 @@ namespace LongPolling
                 })
                 .ConfigureServices((_, services) =>
                 {
+                    services.AddStockTelegramBot();
                     services.AddTelegramBotClient();
                     services.AddLongPolling<StxUpdateHandler>();
-                    services.AddLib();
                 });
         }
 

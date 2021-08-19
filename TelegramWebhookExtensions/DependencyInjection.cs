@@ -48,8 +48,17 @@ namespace TelegramBotExtensions
             services.AddScoped<IUpdateHandler, TUpdateHandler>();
         }
 
+        private static bool isSetWebhookInfo = false;
         public static IApplicationBuilder UseTelegramApiWebhookEndPoint(this IApplicationBuilder app)
         {
+            app.Use(async (context, next) =>
+            {
+                if(isSetWebhookInfo)
+                    await next.Invoke();
+                await SetWebhookInfo(context.RequestServices);
+                await next.Invoke();
+            });
+
             app.UseTelegramWebhookMiddleware();
             app.UseEndpoints(endpoints =>
             {
@@ -67,6 +76,14 @@ namespace TelegramBotExtensions
                 });
             });
             return app;
+        }
+        static async Task SetWebhookInfo(IServiceProvider serviceProvider)
+        {
+            var configure = serviceProvider.CreateScope().ServiceProvider.GetService<IConfiguration>();
+            var telegramBot = serviceProvider.CreateScope().ServiceProvider.GetService<ITelegramBotClient>();
+            await telegramBot.TestApiAsync();
+            var telegramWebhookUrl = configure["TelegramSetting:TelegramApiWebhookUrl"];
+            await telegramBot.SetWebhookAsync(telegramWebhookUrl);
         }
     }
 }

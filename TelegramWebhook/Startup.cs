@@ -21,7 +21,7 @@ namespace Webhook
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTelegramBotClient();
-            services.AddLib();
+            services.AddStockTelegramBot();
             services.AddTelegramWebhook<StxUpdateHandler>();
         }
 

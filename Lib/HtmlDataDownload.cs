@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -12,9 +13,10 @@ namespace Lib
         {
             _logger = htmLogger;
         }
-        public async Task<byte[]> DownloadDataTask(string url)
+        public async Task<byte[]> DownloadDataTask(string url,CancellationToken cancellation)
         {
             var webClient = new WebClient();
+            cancellation.Register(webClient.CancelAsync);
             var data = await webClient.DownloadDataTaskAsync(url);
             return data;
         }

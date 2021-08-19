@@ -6,8 +6,11 @@
 
     <ItemGroup>
       <Compile Remove="ConfigureManager\**" />
+      <Compile Remove="Properties\**" />
       <EmbeddedResource Remove="ConfigureManager\**" />
+      <EmbeddedResource Remove="Properties\**" />
       <None Remove="ConfigureManager\**" />
+      <None Remove="Properties\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -23,10 +26,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\TelegramWebhookExtensions\TelegramBotExtensions.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Properties\" />
     </ItemGroup>
 
   <ItemGroup>
