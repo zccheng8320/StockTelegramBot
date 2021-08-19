@@ -5,6 +5,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="ConfigureManager\**" />
+      <EmbeddedResource Remove="ConfigureManager\**" />
+      <None Remove="ConfigureManager\**" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="CoreHtmlToImage" Version="1.0.6" />
       <PackageReference Include="HtmlAgilityPack" Version="1.11.34" />
       <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0-preview.6.21352.12" />
@@ -20,7 +26,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ConfigureManager\" />
+      <Folder Include="Properties\" />
     </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="chromedriver.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 
 </Project>

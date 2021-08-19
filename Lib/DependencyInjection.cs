@@ -75,6 +75,8 @@ namespace Lib
             var queue = serviceProvider.GetService<IQueue<ChromeDriver>>();
             var configuration = serviceProvider.GetService<IConfiguration>();
             var driverPath = configuration["ChromeDriverSetting:DriverPath"];
+            if (string.IsNullOrEmpty(driverPath))
+                driverPath = AppDomain.CurrentDomain.BaseDirectory;
             var maxChromeDriverServices = int.Parse(configuration["ChromeDriverSetting:MaxChromeDriverServices"]);
             var tasks =new Task[maxChromeDriverServices];
             
