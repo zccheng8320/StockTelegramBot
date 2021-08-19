@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Lib;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
+using TelegramBotExtensions;
 
 
 namespace Webhook
@@ -18,6 +19,7 @@ namespace Webhook
         public static async Task Main(string[] args)
         {
             var build = CreateHostBuilder(args).Build();
+            await build.Services.SetWebhookInfo();
             await build.RunStockTelegramBotAsync();
         }
 
