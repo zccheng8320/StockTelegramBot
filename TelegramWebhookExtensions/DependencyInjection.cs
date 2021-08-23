@@ -34,12 +34,21 @@ namespace TelegramBotExtensions
                 return new TelegramBotClient(telegramApiToken);
             });
         }
-        public static void AddLongPolling<TUpdateHandler>(this IServiceCollection services) 
+
+        internal static int GetUpdatesLimit = 20;
+        /// <summary>
+        /// Add telegram LongPolling component
+        /// </summary>
+        /// <typeparam name="TUpdateHandler"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="getUpdatesLimit"><see href="https://core.telegram.org/bots/api#getupdates">getUpdates.limit</see></param>
+        public static void AddLongPolling<TUpdateHandler>(this IServiceCollection services,int getUpdatesLimit = 20) 
             where TUpdateHandler : class,IUpdateHandler 
         {
+            services.AddSingleton<UpdateQueue>();
             services.AddHostedService<LongPollingHostService>();
-            services.AddSingleton<IQueue<Update>, UpdateQueue>();
             services.AddScoped<IUpdateHandler, TUpdateHandler>();
+            GetUpdatesLimit = getUpdatesLimit;
         }
         
         public static void AddTelegramWebhook<TUpdateHandler>(this IServiceCollection services)

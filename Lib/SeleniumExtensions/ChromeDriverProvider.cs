@@ -8,7 +8,7 @@ using TelegramBotExtensions.Interfaces;
 
 namespace Lib.SeleniumExtensions
 {
-    public class ChromeDriverConcurrentQueue : IQueue<ChromeDriver>
+    internal class ChromeDriverConcurrentQueue
     {
         private readonly ConcurrentQueue<ChromeDriver> _chromeDriverQueue;
         private readonly AutoResetEvent _queueNotifier = new AutoResetEvent(false);

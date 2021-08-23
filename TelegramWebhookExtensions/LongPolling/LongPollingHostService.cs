@@ -16,28 +16,25 @@ namespace TelegramBotExtensions.LongPolling
     public class LongPollingHostService : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IQueue<Update> _updateQueue;
-        private readonly IConfiguration _configuration;
+        private readonly UpdateQueue _updateQueue;
         private readonly ILogger<LongPollingHostService> _logger;
-        private readonly int _longPollingMaximumNumberOfRequestProcessors;
+        private readonly int _getUpdatesLimit;
 
-        public LongPollingHostService(IServiceProvider serviceProvider, IQueue<Update> updateQueue,
-            IConfiguration configuration, ILogger<LongPollingHostService> logger)
+        public LongPollingHostService(IServiceProvider serviceProvider, UpdateQueue updateQueue, ILogger<LongPollingHostService> logger)
         {
             _serviceProvider = serviceProvider;
             _updateQueue = updateQueue;
-            _configuration = configuration;
             _logger = logger;
-            _longPollingMaximumNumberOfRequestProcessors =
-                int.Parse(_configuration[$"TelegramSetting:LongPollingMaximumNumberOfRequestProcessors"]);
+            _getUpdatesLimit = DependencyInjection.GetUpdatesLimit;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            // Thread1 : send getUpdateInfo request to telegram,and enqueue Update message to  UpdateMessageQueue
             Run(() => UpdateInfoMonitor(stoppingToken), stoppingToken);
+            // Thread2 :Dequeue UpdateMessageQueue to get Update message and process
             Run(() => RequestProcessorController(stoppingToken), stoppingToken);
             return CompletedTask;
-
         }
 
         public override Task StartAsync(CancellationToken token = default)
@@ -96,7 +93,7 @@ namespace TelegramBotExtensions.LongPolling
                     _serviceProvider.CreateAsyncScope().ServiceProvider.GetService<ITelegramBotClient>();
                 //_logger.LogInformation($"Client is sending GetUpdates(offset:{offset}) request to Telegram Api...");
                 var updates = await telegramBotClient.GetUpdatesAsync(offset,
-                    _longPollingMaximumNumberOfRequestProcessors, cancellationToken: token);
+                    _getUpdatesLimit, cancellationToken: token);
                 //_logger.LogInformation($"GetUpdates(offset:{offset}) request is success!, updates count is {updates.Length}");
                 return updates;
             }
@@ -109,20 +106,20 @@ namespace TelegramBotExtensions.LongPolling
 
         private void RequestProcessorController(CancellationToken token)
         {
-            for (var i = 0; i < _longPollingMaximumNumberOfRequestProcessors; i++)
-                CreateUpdateHandlerProcessTask(token);
-        }
-        private void CreateUpdateHandlerProcessTask(CancellationToken cancellationToken)
-        {
-            var scope = _serviceProvider.CreateScope().ServiceProvider;
-            var updateHandler = scope.GetService<IUpdateHandler>();
-            var update = _updateQueue.Dequeue();
-            var task = updateHandler.Process(update);
-            task.ContinueWith(m =>
+            while (!token.IsCancellationRequested)
             {
-                if(!cancellationToken.IsCancellationRequested)
-                    CreateUpdateHandlerProcessTask(cancellationToken);
-            }, cancellationToken);
+                var update = _updateQueue.Dequeue();
+                Run(async () => await CreateUpdateHandlerProcessTask(update), token);
+            }
+        }
+        private async Task CreateUpdateHandlerProcessTask(Update update)
+        {
+            await Run(async () =>
+            {
+                var scope = _serviceProvider.CreateScope().ServiceProvider;
+                var updateHandler = scope.GetService<IUpdateHandler>();
+                await updateHandler.Process(update);
+            });
         }
     }
 }

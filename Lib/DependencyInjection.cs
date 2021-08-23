@@ -39,7 +39,7 @@ namespace Lib
 
         private static void AddStxChartSelenium(this IServiceCollection services)
         {
-            services.AddSingleton<IQueue<ChromeDriver>, ChromeDriverConcurrentQueue>();
+            services.AddSingleton<ChromeDriverConcurrentQueue>();
             services.AddSingleton<IStxChartScreenShot, StxChartSelenium>();
             
         }

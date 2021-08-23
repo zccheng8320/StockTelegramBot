@@ -7,11 +7,11 @@ using TelegramBotExtensions.Interfaces;
 
 namespace WebCrawler
 {
-    public class StxChartSelenium:IStxChartScreenShot
+    internal class StxChartSelenium:IStxChartScreenShot
     {
-        private readonly IQueue<ChromeDriver> _chromeDriverProvider;
+        private readonly ChromeDriverConcurrentQueue _chromeDriverProvider;
 
-        public StxChartSelenium(IQueue<ChromeDriver> chromeDriverProvider)
+        public StxChartSelenium(ChromeDriverConcurrentQueue chromeDriverProvider)
         {
             _chromeDriverProvider = chromeDriverProvider;
         }

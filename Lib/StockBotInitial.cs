@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Lib.SeleniumExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,7 +26,7 @@ namespace Lib
         }
         static async Task OpenChromeWebDriver(IServiceProvider serviceProvider, CancellationToken token = default)
         {
-            var queue = serviceProvider.GetService<IQueue<ChromeDriver>>();
+            var queue = serviceProvider.GetService<ChromeDriverConcurrentQueue>();
             var configuration = serviceProvider.GetService<IConfiguration>();
             var driverPath = configuration["ChromeDriverSetting:DriverPath"];
             if (string.IsNullOrEmpty(driverPath))
