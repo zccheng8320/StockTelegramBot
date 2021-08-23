@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "TelegramWebhook": {
+    "Webhook": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

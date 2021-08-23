@@ -5,11 +5,11 @@ VisualStudioVersion = 16.0.31321.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lib", "Lib\Lib.csproj", "{40423ED5-35C9-4EAC-B415-BF6B8A41697F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webhook", "TelegramWebhook\Webhook.csproj", "{1979792C-2E0E-4E31-B45A-94B94F567F7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webhook", "Webhook\Webhook.csproj", "{1979792C-2E0E-4E31-B45A-94B94F567F7A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramBotExtensions", "TelegramWebhookExtensions\TelegramBotExtensions.csproj", "{92C5904F-D4E6-4E87-94B0-FBB308CFD502}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LongPolling", "StxTelegramBotLongPolling\LongPolling.csproj", "{611530E4-6395-41F0-BE9D-56094B7771AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LongPolling", "LongPolling\LongPolling.csproj", "{611530E4-6395-41F0-BE9D-56094B7771AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
