@@ -46,6 +46,7 @@ namespace TelegramBotExtensions
             where TUpdateHandler : class,IUpdateHandler 
         {
             services.AddSingleton<UpdateQueue>();
+            services.AddSingleton<IBackGroundService,UpdateMonitor>();
             services.AddHostedService<LongPollingHostService>();
             services.AddScoped<IUpdateHandler, TUpdateHandler>();
             GetUpdatesLimit = getUpdatesLimit;

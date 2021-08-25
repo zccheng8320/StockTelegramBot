@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using TelegramBotExtensions.Interfaces;
 
@@ -10,6 +11,10 @@ namespace TelegramBotExtensions.LongPolling
     {
         private readonly ConcurrentQueue<Update> _updateQueue;
         private readonly AutoResetEvent _queueNotifier = new AutoResetEvent(false);
+
+        public delegate Task AfterEnqueueHandler();
+
+        public event AfterEnqueueHandler AfterEnqueueHandlerEvent;
         public UpdateQueue()
         {
             _updateQueue = new ConcurrentQueue<Update>();
@@ -29,6 +34,8 @@ namespace TelegramBotExtensions.LongPolling
         {
             _updateQueue.Enqueue(objects);
             _queueNotifier.Set();
+            // Not Waiting
+            AfterEnqueueHandlerEvent?.Invoke();
         }
     }
 }
