@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -22,7 +23,7 @@ namespace Lib.CommandProcess
             var codeMapper = _stockCodeMapperProvider.Get();
             if (string.IsNullOrEmpty(update.Message?.Text?.TrimEnd()))
                 return;
-            var userTypingCode = update.GetStockCode();
+            var userTypingCode = GetStockCode(update);
             var chatId = update.GetChatId();
             if (string.IsNullOrEmpty(userTypingCode))
                 return;
@@ -37,12 +38,20 @@ namespace Lib.CommandProcess
             await _client.SendPhotoAsync(chatId, new InputOnlineFile(memoryStream, $"{userTypingCode}.jpg"));
         }
 
+        private string GetStockCode(Update update)
+        {
+            var text = update.Message?.Text?.TrimEnd();
+            if (text == null)
+                return null;
+            var regular = new Regex("^\\/.?c");
+            return regular.Replace(text, "").Trim();
+        }
         public override bool IsMatch(Update update)
         {
             var text = update.Message?.Text;
             if (string.IsNullOrEmpty(text)) return false;
-            if (text.Length < 3) return false;
-            return text[0] == '/' && text[1] == 'c' && text[2] == ' ';
+            var regular = new Regex("^\\/.?c");
+            return regular.IsMatch(text);
         }
     }
 }
