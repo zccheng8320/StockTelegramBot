@@ -40,15 +40,16 @@ namespace Lib.CommandProcess
                 var userId = update.Message.From.Id;
                 var chatId = update.GetChatId();
                 var userPortfolio = await db.UserPortfolios.FirstOrDefaultAsync(m => m.UserId == userId);
+                var userName = update.Message.From.FirstName + update.Message.From.LastName;
                 if (userPortfolio == null)
                 {
-                    await _client.SendTextMessageAsync(chatId, $"{update.Message.From.LastName}尚未設定投資組合");
+                    await _client.SendTextMessageAsync(chatId, $"{userName}尚未設定投資組合");
                     return;
                 }
                 var tasks = userPortfolio.Portfolio.Select(code => _stxInfoTextCrawler.GetInfoTextAsync(code)).ToList();
                 var yahooStocks = await Task.WhenAll(tasks);
                 var result = new StringBuilder();
-                result.AppendLine($"{update.Message.From.FirstName + update.Message.From.LastName}:投資組合");
+                result.AppendLine($"{userName}:投資組合");
                 foreach (var yahooStock in yahooStocks)
                 {
                     result.AppendLine("－－－－－－－－－－－－－－－－－－－－－－－");

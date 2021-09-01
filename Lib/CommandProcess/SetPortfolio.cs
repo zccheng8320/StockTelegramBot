@@ -43,7 +43,7 @@ namespace Lib.CommandProcess
                     return;
                 if (!TryGetPortfolio(_regex.Replace(text, "").Trim(), out var portfolio))
                 {
-                    await _client.SendTextMessageAsync(update.GetChatId(), "設定失敗，請確認輸入正確的股票名稱。");
+                    await _client.SendTextMessageAsync(update.GetChatId(), "設定失敗，請輸入正確的股票名稱。");
                     return;
                 }
 
