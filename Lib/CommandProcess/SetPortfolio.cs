@@ -20,7 +20,7 @@ namespace Lib.CommandProcess
         private readonly IStockCodeMapperProvider _stockCodeMapperProvider;
         private readonly Db db;
         private readonly Regex _regex = new("^\\/.?set_portfolio");
-        public SetPortfolio(ILogger<SetPortfolio> logger,IDbContextFactory<Db> factory, ITelegramBotClient client, IStockCodeMapperProvider stockCodeMapperProvider) : base(client)
+        public SetPortfolio(ILogger<SetPortfolio> logger, IDbContextFactory<Db> factory, ITelegramBotClient client, IStockCodeMapperProvider stockCodeMapperProvider) : base(client)
         {
             db = factory.CreateDbContext();
             _logger = logger;
@@ -47,6 +47,12 @@ namespace Lib.CommandProcess
                     return;
                 }
 
+                if (!portfolio.Any())
+                {
+                    await _client.SendTextMessageAsync(update.GetChatId(), "設定失敗，請至少輸入一檔股票。");
+                    return;
+                }
+
                 var userId = update.Message.From.Id;
                 var user = db.UserPortfolios.FirstOrDefault(m => m.UserId == userId);
                 if (user == null)
@@ -59,12 +65,12 @@ namespace Lib.CommandProcess
                 }
                 else
                     user.PortfolioSerialize = string.Join(',', portfolio);
-                
+
 
                 await db.SaveChangesAsync();
                 await _client.SendTextMessageAsync(update.GetChatId(), "設定成功!!");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.LogCritical(e.ToString());
             }
@@ -72,7 +78,7 @@ namespace Lib.CommandProcess
             {
                 db?.DisposeAsync();
             }
-           
+
         }
 
         private bool TryGetPortfolio(string text, out List<string> portfolio)
@@ -80,13 +86,17 @@ namespace Lib.CommandProcess
             var codeList = text.Split(" ");
             var dict = _stockCodeMapperProvider.Get();
             portfolio = null;
-            for (int i = 0; i < codeList.Length; i++)
+            var result = new List<string>();
+            foreach (var code in codeList)
             {
-                if (!dict.TryGetValue(codeList[i], out string code))
+                if (string.IsNullOrEmpty(code))
+                    continue;
+                if (!dict.TryGetValue(code, out var c))
                     return false;
-                codeList[i] = code;
+                result.Add(c);
             }
-            portfolio = codeList.ToList();
+
+            portfolio = result;
             return true;
         }
     }
