@@ -14,7 +14,7 @@ namespace Lib.Stock.Model
         public IEnumerable<Tick> Tick { get; set; }
         [JsonProperty("mem")]
         public Mem Mem { get; set; }
-
+        public string Code { get; set; }
         public string Icon
         {
             get
@@ -25,6 +25,13 @@ namespace Lib.Stock.Model
             }
         }
 
+        public string ToSimpleString()
+        {
+            var tick = Tick.LastOrDefault();
+            if (tick == null || Mem == null)
+                return $"{Code}:尚無成交資訊。";
+            return $"{Mem.Display}：{tick.現價} {Icon} {Mem.漲跌} ({Mem.漲跌幅:F}%)";
+        }
         public override string ToString()
         {
             var tick = Tick.LastOrDefault();

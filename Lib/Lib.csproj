@@ -16,6 +16,10 @@
     <ItemGroup>
       <PackageReference Include="CoreHtmlToImage" Version="1.0.6" />
       <PackageReference Include="HtmlAgilityPack" Version="1.11.34" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.9">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0-preview.6.21352.12" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
@@ -25,6 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
       <ProjectReference Include="..\TelegramWebhookExtensions\TelegramBotExtensions.csproj" />
     </ItemGroup>
 

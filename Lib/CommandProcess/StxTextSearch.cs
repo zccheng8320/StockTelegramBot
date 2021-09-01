@@ -40,14 +40,13 @@ namespace Lib.CommandProcess
                 }
                 var code = codeMapper[userTypingCode];
                 var info = await _stxInfoTextCrawler.GetInfoTextAsync(code);
-                await _client.SendTextMessageAsync(chatId, info);
+                await _client.SendTextMessageAsync(chatId, info.ToString());
 
             }
             catch (Exception e)
             {
                 _logger.LogCritical(e.ToString());
             }
-
         }
 
         private string GetStockCode(Update update)

@@ -18,7 +18,7 @@ namespace Lib.Stock
             _dataDownload = dataDownload;
         }
 
-        public async Task<string> GetInfoTextAsync(string code)
+        public async Task<YahooStock> GetInfoTextAsync(string code)
         {
             code = code switch
             {
@@ -33,7 +33,8 @@ namespace Lib.Stock
             var content = await GetContentAsync(code, url);
             var jsonString = FormatToJson(content);
             var yahooStock = JsonConvert.DeserializeObject<YahooStock>(jsonString);
-            return yahooStock.ToString();
+            yahooStock.Code = code;
+            return yahooStock;
         }
 
         private async Task<string> GetContentAsync(string code, string url)

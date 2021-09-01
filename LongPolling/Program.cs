@@ -31,7 +31,7 @@ namespace LongPolling
                 })
                 .ConfigureServices((_, services) =>
                 {
-                    services.AddStockTelegramBot();
+                    services.AddStockTelegramBot(_.Configuration);
                     services.AddTelegramBotClient();
                     services.AddLongPolling<StxUpdateHandler>();
                 });

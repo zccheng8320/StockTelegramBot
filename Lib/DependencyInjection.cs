@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess;
 using Lib.CommandProcess;
 using Lib.CommandProcess.Interfaces;
 using Lib.SeleniumExtensions;
@@ -22,7 +23,7 @@ namespace Lib
         /// use this method with <see cref="StockBotHostExtensions.RunStockTelegramBotAsync"/> necessarily
         /// </summary>
         /// <param name="services"></param>
-        public static void AddStockTelegramBot(this IServiceCollection services)
+        public static void AddStockTelegramBot(this IServiceCollection services, IConfiguration configuration = null)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             services.AddMemoryCache();
@@ -34,7 +35,10 @@ namespace Lib
             services.AddScoped<IStxInfoTextCrawler,StxInfoTextCrawler>();           
             services.AddScoped<BaseCommandProcessor, StxChartSearch>();
             services.AddScoped<BaseCommandProcessor, StxTextSearch>();
+            services.AddScoped<BaseCommandProcessor, GetPortfolio>();
+            services.AddScoped<BaseCommandProcessor, SetPortfolio>();
             services.AddScoped<ICommandProcessorFactory,CommandProcessorFactory>();
+            services.AddDataAccess(configuration);
         }
 
         private static void AddStxChartSelenium(this IServiceCollection services)

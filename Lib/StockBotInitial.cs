@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DataAccess;
 using Lib.SeleniumExtensions;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,6 +21,7 @@ namespace Lib
         public static async Task RunStockTelegramBotAsync(this IHost host, CancellationToken token = default)
         {
             var service = host.Services;
+            service.UseDataAccess();
             await LoadStockCodeMapper(service, token);
             if (service.GetService<IStxChartScreenShot>()?.GetType() == typeof(StxChartSelenium))
                 await OpenChromeWebDriver(service, token);

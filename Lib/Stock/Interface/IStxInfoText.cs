@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
+using Lib.Stock.Model;
 
 namespace Lib
 {
     public interface IStxInfoTextCrawler
     {
-        Task<string> GetInfoTextAsync(string code);
+        Task<YahooStock> GetInfoTextAsync(string code);
     }
 }
