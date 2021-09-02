@@ -40,6 +40,23 @@
 
     ![chart](https://raw.githubusercontent.com/zccheng8320/StockTelegramBot/master/img/chart.png)
 
+3. 投資組合查詢 : 
+
+    * 設定投資組合指令: /set_portfolio 個股名稱或代號(以空格區隔)
+         
+        ``` telegram command
+        /set_portfolio 0050 00692 2303 2330 2603 台郡 穩懋
+        ```
+
+    * 查詢投資組合指令 : /portfolio
+
+        ``` telegram command
+        /portfolio
+        ```
+
+    結果
+    ![portfolio](https://raw.githubusercontent.com/zccheng8320/StockTelegramBot/master/img/portfolio.png)
+
 ## 開始前
 
 ---
