@@ -30,7 +30,7 @@ namespace Lib.Stock.Model
             var tick = Tick.LastOrDefault();
             if (tick == null || Mem == null)
                 return $"{Code}:尚無成交資訊。";
-            return $"{Mem.Display}：{tick.現價} {Icon} {Mem.漲跌} ({Mem.漲跌幅:F}%)";
+            return $"{Mem.SimpleDisplay}：{tick.現價} {Icon} {Mem.漲跌} ({Mem.漲跌幅:F}%)";
         }
         public override string ToString()
         {
@@ -62,6 +62,7 @@ namespace Lib.Stock.Model
         /// 顯示名稱
         /// </summary>
         public string Display => Id is "#001" or "#026" ? Id is "#001" ? "加權股價指數" : "櫃買指數" : $"({Id}){Name}";
+        public string SimpleDisplay => Id is "#001" or "#026" ? Id is "#001" ? "加權股價指數" : "櫃買指數" : $"{Name}";
         [JsonProperty("404")]
         private int 總量_個股 { get; set; }
         [JsonProperty("501")]
