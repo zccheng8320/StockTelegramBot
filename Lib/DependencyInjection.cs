@@ -30,8 +30,8 @@ namespace Lib
             services.AddSingleton<IStockCodeMapperProvider,TaipeiStockCodeMapperProvider>();
             services.AddSingleton<IStockCodeMapperCreator,TaipeiStockCodeMapperCreator>();
             services.AddSingleton<IHtmlDataDownload,HtmlDataDownload>();       
-            services.AddStxChartSelenium();
-            //services.AddSingleton<IStxChartScreenShot, StxChartScreenShot>();
+            //services.AddStxChartSelenium();
+            services.AddSingleton<IStxChartScreenShot, StxChartScreenShot>();
             services.AddScoped<IStxInfoTextCrawler,StxInfoTextCrawler>();           
             services.AddScoped<BaseCommandProcessor, StxChartSearch>();
             services.AddScoped<BaseCommandProcessor, StxTextSearch>();

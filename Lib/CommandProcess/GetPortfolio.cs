@@ -50,7 +50,7 @@ namespace Lib.CommandProcess
                 var yahooStocks = await Task.WhenAll(tasks);
                 var result = new StringBuilder();
                 result.AppendLine($"{userName}:投資組合");
-                result.AppendLine("－－－－－－－－－－－－－－");
+                result.AppendLine("-");
                 foreach (var yahooStock in yahooStocks)
                     result.AppendLine(yahooStock.ToSimpleString());
                 
