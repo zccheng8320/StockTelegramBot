@@ -10,7 +10,6 @@ namespace TelegramBotExtensions.LongPolling
     public class UpdateQueue
     {
         private readonly ConcurrentQueue<Update> _updateQueue;
-        private readonly AutoResetEvent _queueNotifier = new AutoResetEvent(false);
 
         public delegate Task AfterEnqueueHandler();
 
@@ -21,19 +20,16 @@ namespace TelegramBotExtensions.LongPolling
         }
         public Update Dequeue()
         {
-            while (true)
-            {
-                _queueNotifier.WaitOne();
-                if (!_updateQueue.TryDequeue(out var update))
-                    continue;
-                return update;
-            }
+
+            if (!_updateQueue.TryDequeue(out var update))
+                return null;
+            return update;
+
         }
 
         public void Enqueue(Update objects)
         {
             _updateQueue.Enqueue(objects);
-            _queueNotifier.Set();
             // Not Waiting
             AfterEnqueueHandlerEvent?.Invoke();
         }

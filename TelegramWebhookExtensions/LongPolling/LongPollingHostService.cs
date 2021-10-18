@@ -20,7 +20,7 @@ namespace TelegramBotExtensions.LongPolling
         private readonly IServiceProvider _serviceProvider;
         private readonly UpdateQueue _updateQueue;
         private readonly ILogger<LongPollingHostService> _logger;
-        public LongPollingHostService(IEnumerable<IBackGroundService> backGroundServices,IServiceProvider serviceProvider, UpdateQueue updateQueue, ILogger<LongPollingHostService> logger)
+        public LongPollingHostService(IEnumerable<IBackGroundService> backGroundServices, IServiceProvider serviceProvider, UpdateQueue updateQueue, ILogger<LongPollingHostService> logger)
         {
             _backGroundServices = backGroundServices;
             _serviceProvider = serviceProvider;
@@ -33,10 +33,12 @@ namespace TelegramBotExtensions.LongPolling
             // Thread1 : send getUpdateInfo request to telegram,and enqueue Update message to  UpdateMessageQueue
             foreach (var backGroundService in _backGroundServices)
                 await backGroundService.Start(stoppingToken);
-            
+
             _updateQueue.AfterEnqueueHandlerEvent += async () =>
             {
                 var update = _updateQueue.Dequeue();
+                if (update == null)
+                    return;
                 var scope = _serviceProvider.CreateScope().ServiceProvider;
                 var updateHandler = scope.GetService<IUpdateHandler>();
                 await updateHandler.Process(update);
@@ -58,6 +60,6 @@ namespace TelegramBotExtensions.LongPolling
             await telegramBot.SetWebhookAsync("", cancellationToken: token);
         }
 
-        
+
     }
 }
