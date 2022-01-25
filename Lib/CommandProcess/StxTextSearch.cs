@@ -1,11 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using Microsoft.Extensions.Logging;
+using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.InputFiles;
 
 namespace Lib.CommandProcess
 {
@@ -61,6 +60,8 @@ namespace Lib.CommandProcess
         {
             var text = update.Message?.Text;
             if (string.IsNullOrEmpty(text)) return false;
+            if (text.StartsWith("/top", true,CultureInfo.CurrentCulture))
+                return false;
             var regular = new Regex("^\\/.?t");
             return regular.IsMatch(text);
         }

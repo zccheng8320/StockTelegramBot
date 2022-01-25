@@ -23,6 +23,7 @@ namespace Lib
         /// use this method with <see cref="StockBotHostExtensions.RunStockTelegramBotAsync"/> necessarily
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="configuration"></param>
         public static void AddStockTelegramBot(this IServiceCollection services, IConfiguration configuration = null)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -32,12 +33,20 @@ namespace Lib
             services.AddSingleton<IHtmlDataDownload,HtmlDataDownload>();       
             //services.AddStxChartSelenium();
             services.AddSingleton<IStxChartScreenShot, StxChartScreenShot>();
-            services.AddScoped<IStxInfoTextCrawler,StxInfoTextCrawler>();           
+            services.AddScoped<IStxInfoTextCrawler,StxInfoTextCrawler>();    
+            services.AddScoped<IStockRankCrawler, StockRankCrawler>();
             services.AddScoped<BaseCommandProcessor, StxChartSearch>();
             services.AddScoped<BaseCommandProcessor, StxTextSearch>();
+            services.AddScoped<BaseCommandProcessor, ListStockRank>();
             services.AddScoped<BaseCommandProcessor, GetPortfolio>();
             services.AddScoped<BaseCommandProcessor, SetPortfolio>();
             services.AddScoped<ICommandProcessorFactory,CommandProcessorFactory>();
+            services.AddHttpClient<IStockRankCrawler, StockRankCrawler>(m =>
+            {
+                m.BaseAddress =
+                    new Uri(
+                        "https://tw.stock.yahoo.com/_td-stock/api/resource/StockServices.rank;exchange=TAI;limit=20;offset=0;period=1D;sortBy={0}");
+            });
             services.AddDataAccess(configuration);
         }
 

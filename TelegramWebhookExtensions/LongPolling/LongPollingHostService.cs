@@ -39,8 +39,8 @@ namespace TelegramBotExtensions.LongPolling
                 var update = _updateQueue.Dequeue();
                 if (update == null)
                     return;
-                var scope = _serviceProvider.CreateScope().ServiceProvider;
-                var updateHandler = scope.GetService<IUpdateHandler>();
+                using var scoping = _serviceProvider.CreateScope();
+                var updateHandler = scoping.ServiceProvider.GetRequiredService<IUpdateHandler>();
                 await updateHandler.Process(update);
             };
             await CompletedTask;

@@ -11,15 +11,15 @@ using TelegramBotExtensions.LongPolling;
 
 namespace LongPolling
 {
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
             await host.RunStockTelegramBotAsync();
         }
 
-        static IHostBuilder CreateHostBuilder(string[] args)
+        private static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(logging =>
